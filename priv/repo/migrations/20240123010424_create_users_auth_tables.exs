@@ -6,7 +6,7 @@ defmodule VendingMachine.Repo.Migrations.CreateUsersAuthTables do
 
     create table(:users) do
       add :email, :citext, null: false
-      add :username, :string, null: false
+      add :username, :string
       add :deposit_amount, :float, default: 0.0
       add :deposit_coins, :map, default: %{}
       add :role, :string

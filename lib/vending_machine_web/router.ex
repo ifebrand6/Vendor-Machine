@@ -15,6 +15,7 @@ defmodule VendingMachineWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_api_user
   end
 
   scope "/", VendingMachineWeb do

@@ -13,6 +13,26 @@ defmodule VendingMachineWeb.UserAuth do
   @remember_me_cookie "_vending_machine_web_user_remember_me"
   @remember_me_options [sign: true, max_age: @max_age, same_site: "Lax"]
 
+
+  @doc """
+    It receives the connection and checks if the "authorization"
+    header has been set with "Bearer TOKEN", where "TOKEN" is
+     the value returned by Accounts.create_user_api_token/1.
+     In case the token is not valid or there is no such user, we abort the request.
+  """
+  def fetch_api_user(conn, _opts) do
+    with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
+         {:ok, user} <- Accounts.fetch_user_by_api_token(token) do
+      assign(conn, :current_user, user)
+    else
+      _ ->
+        conn
+        |> send_resp(:unauthorized, "No access for you")
+        |> halt()
+    end
+  end
+
+
   @doc """
   Logs the user in.
 
