@@ -22,12 +22,20 @@ defmodule VendingMachineWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    live "/products", ProductLive.Index, :index
+    live "/products/new", ProductLive.Index, :new
+    live "/products/:id/edit", ProductLive.Index, :edit
+
+    live "/products/:id", ProductLive.Show, :show
+    live "/products/:id/show/edit", ProductLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", VendingMachineWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", VendingMachineWeb do
+    pipe_through :api
+    resources "/products", ProductController, except: [:new, :edit]
+    post "/user_session", UserSessionController, :create_session
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:vending_machine, :dev_routes) do
