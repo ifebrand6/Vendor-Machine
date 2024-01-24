@@ -378,12 +378,37 @@ defmodule VendingMachine.Accounts do
   end
 
   def update_user_balance(user, amount) do
-    updated_amount =   user.deposit_amount + amount
+    updated_amount = user.deposit_amount + amount
     amount_str = Integer.to_string(amount)
     updated_coins = Map.update(user.deposit_coins, amount_str, 1, &(&1 + 1))
+
     user
-    |> VendingMachine.Accounts.User.deposit_changeset(%{deposit_amount: updated_amount, deposit_coins: updated_coins})
-    |> Repo.update
+    |> VendingMachine.Accounts.User.deposit_changeset(%{
+      deposit_amount: updated_amount,
+      deposit_coins: updated_coins
+    })
+    |> Repo.update()
   end
 
+  def update_user_balance(user, amount, change) do
+    updated_amount = user.deposit_amount - amount
+
+    user
+    |> VendingMachine.Accounts.User.deposit_changeset(%{
+      deposit_amount: updated_amount,
+      deposit_coins: change
+    })
+    |> Repo.update()
+  end
+
+  def reset_user_balance(user) do
+    user
+    |> VendingMachine.Accounts.User.deposit_changeset(%{
+      deposit_amount: 0,
+      deposit_coins: %{"5" => 0, "10" => 0, "20" => 0, "50" => 0, "100" => 0}
+    })
+    |> Repo.update()
+  end
+
+  def get_temp_user, do: Repo.one(from x in User, order_by: [desc: x.id], limit: 1)
 end

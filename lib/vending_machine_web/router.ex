@@ -36,6 +36,8 @@ defmodule VendingMachineWeb.Router do
     resources "/products", ProductController, except: [:new, :edit]
     # post "/user_session", UserSessionController, :create_session
     post "/deposit", TransactionController, :deposit
+    post "/reset", TransactionController, :reset_balance
+    post "/buy", TransactionController, :buy
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

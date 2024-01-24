@@ -1,21 +1,39 @@
 defmodule VendingMachineWeb.TransactionJSON do
-
   def deposit(%{user: user}) do
-    %{data:
-      %{
-        user: user.id,
-        deposit_amount: user.deposit_amount,
-        deposit_coins: user.deposit_coins
-      }
+    %{
+      user: user.id,
+      deposit_amount: user.deposit_amount,
+      deposit_coins: user.deposit_coins,
+      message: "Deposit successful"
     }
   end
 
-  def error(reason) when is_binary(reason) do
-    %{error: reason}
+  def reset(%{user: user}) do
+    %{
+      user: user.id,
+      deposit_amount: user.deposit_amount,
+      deposit_coins: user.deposit_coins,
+      message: "Reset successful"
+    }
   end
 
-  # You can add additional clauses for different argument types if needed
-  def error(%{reason: reason}) do
-    %{error: reason}
+  def buy(%{total_spent: total_spent, purchased_products: purchased_products, change: change}) do
+    %{
+      total_spent: total_spent,
+      purchased_products: purchased_products,
+      change: change
+    }
+  end
+
+  def error(error) when is_binary(error) do
+    %{error: error}
+  end
+
+  def error(%{error: error}) do
+    %{error: error}
+  end
+
+  def error(%{message: message}) do
+    %{message: message}
   end
 end

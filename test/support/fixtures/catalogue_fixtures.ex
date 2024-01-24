@@ -19,4 +19,15 @@ defmodule VendingMachine.CatalogueFixtures do
 
     product
   end
+
+  def product_fixture_(attrs \\ %{}) do
+    {:ok, product} =
+      attrs
+      |> Enum.into(%{
+        product_name: "some product_name-#{System.unique_integer()}"
+      })
+      |> VendingMachine.Catalogue.create_product()
+
+    product
+  end
 end

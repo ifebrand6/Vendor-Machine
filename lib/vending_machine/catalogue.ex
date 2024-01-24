@@ -37,6 +37,8 @@ defmodule VendingMachine.Catalogue do
   """
   def get_product!(id), do: Repo.get!(Product, id)
 
+  def get_product(id), do: Repo.get(Product, id)
+
   @doc """
   Creates a product.
 
