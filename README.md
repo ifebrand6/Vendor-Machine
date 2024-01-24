@@ -4,7 +4,14 @@
 
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+
+
+https://github.com/ifebrand6/Vendor-Machine/assets/26370173/b2158dcf-861d-4b6d-af2f-1af51ba22cc6
+
+<img width="1440" alt="Screen Shot 2024-01-24 at 1 51 18 AM" src="https://github.com/ifebrand6/Vendor-Machine/assets/26370173/b392cb1a-3f87-4b82-acfd-9635177120a7">
+<img width="1391" alt="Screen Shot 2024-01-24 at 1 52 59 AM" src="https://github.com/ifebrand6/Vendor-Machine/assets/26370173/8d643393-76d1-46aa-989d-6f3940e2c7d6">
+
+<img width="1394" alt="Screen Shot 2024-01-24 at 1 53 25 AM" src="https://github.com/ifebrand6/Vendor-Machine/assets/26370173/0a862213-174a-4961-8387-e86650374006">
 
 
 ## Run Locally
