@@ -40,7 +40,7 @@ defmodule VendingMachine.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email,:username, :password, :deposit_amount, :deposit_coins, :role])
+    |> cast(attrs, [:email, :username, :password, :deposit_amount, :deposit_coins, :role])
     |> validate_email(opts)
     |> validate_password(opts)
   end
@@ -158,5 +158,10 @@ defmodule VendingMachine.Accounts.User do
     else
       add_error(changeset, :current_password, "is not valid")
     end
+  end
+
+  def deposit_changeset(user, attrs, _opts \\ []) do
+    user
+    |> cast(attrs, [:deposit_amount, :deposit_coins])
   end
 end

@@ -7,8 +7,8 @@ defmodule VendingMachine.Repo.Migrations.CreateUsersAuthTables do
     create table(:users) do
       add :email, :citext, null: false
       add :username, :string
-      add :deposit_amount, :float, default: 0.0
-      add :deposit_coins, :map, default: %{}
+      add :deposit_amount, :float, default: 0
+      add :deposit_coins, :map, default: %{5 => 0, 10 => 0, 20 => 0, 50 => 0, 100 => 0} #TODO optimized this
       add :role, :string
       add :hashed_password, :string, null: false
       add :confirmed_at, :naive_datetime

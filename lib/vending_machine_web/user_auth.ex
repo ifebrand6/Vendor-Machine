@@ -13,7 +13,6 @@ defmodule VendingMachineWeb.UserAuth do
   @remember_me_cookie "_vending_machine_web_user_remember_me"
   @remember_me_options [sign: true, max_age: @max_age, same_site: "Lax"]
 
-
   @doc """
     It receives the connection and checks if the "authorization"
     header has been set with "Bearer TOKEN", where "TOKEN" is
@@ -31,7 +30,6 @@ defmodule VendingMachineWeb.UserAuth do
         |> halt()
     end
   end
-
 
   @doc """
   Logs the user in.

@@ -376,4 +376,14 @@ defmodule VendingMachine.Accounts do
       {:error, :user, changeset, _} -> {:error, changeset}
     end
   end
+
+  def update_user_balance(user, amount) do
+    updated_amount =   user.deposit_amount + amount
+    amount_str = Integer.to_string(amount)
+    updated_coins = Map.update(user.deposit_coins, amount_str, 1, &(&1 + 1))
+    user
+    |> VendingMachine.Accounts.User.deposit_changeset(%{deposit_amount: updated_amount, deposit_coins: updated_coins})
+    |> Repo.update
+  end
+
 end

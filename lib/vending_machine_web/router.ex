@@ -15,7 +15,7 @@ defmodule VendingMachineWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-    plug :fetch_api_user
+    # plug :fetch_api_user
   end
 
   scope "/", VendingMachineWeb do
@@ -34,7 +34,8 @@ defmodule VendingMachineWeb.Router do
   scope "/api", VendingMachineWeb do
     pipe_through :api
     resources "/products", ProductController, except: [:new, :edit]
-    post "/user_session", UserSessionController, :create_session
+    # post "/user_session", UserSessionController, :create_session
+    post "/deposit", TransactionController, :deposit
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

@@ -35,7 +35,12 @@ defmodule VendingMachine.CatalogueTest do
 
     test "update_product/2 with valid data updates the product" do
       product = product_fixture()
-      update_attrs = %{amount_available: 43, cost: "456.7", product_name: "some updated product_name"}
+
+      update_attrs = %{
+        amount_available: 43,
+        cost: "456.7",
+        product_name: "some updated product_name"
+      }
 
       assert {:ok, %Product{} = product} = Catalogue.update_product(product, update_attrs)
       assert product.amount_available == 43
