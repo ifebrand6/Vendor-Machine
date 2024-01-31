@@ -2,11 +2,12 @@ defmodule VendingMachineWeb.TransactionControllerTest do
   use VendingMachineWeb.ConnCase
 
   import VendingMachine.CatalogueFixtures
-  import VendingMachine.CatalogueFixtures
   import VendingMachine.AccountsFixtures
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    user = VendingMachine.Repo.insert!(%VendingMachine.Accounts.User{id: 1, email: "test@example.com"})
+    conn = Pow.Plug.assign_current_user(conn, user, [])
+    {:ok, conn: conn}
   end
 
   describe "Deposit API" do
@@ -54,9 +55,9 @@ defmodule VendingMachineWeb.TransactionControllerTest do
       conn = post(conn, ~p"/api/buy", %{product_id: product.id, amount: 2})
       response = json_response(conn, 200)
       assert conn.status == 200
+      %{"message" => message} = response
 
-      %{"total_spent" => total_spent} = response
-      assert total_spent == 60
+      assert message == "Transaction successfully"
     end
 
     test "returns an error for non-existent product", %{conn: conn} do

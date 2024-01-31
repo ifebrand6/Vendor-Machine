@@ -1,5 +1,6 @@
 defmodule VendingMachineWeb.ProductController do
   use VendingMachineWeb, :controller
+  plug VendingMachineWeb.APIEnsureRolePlug, [:seller] when action in [:create, :update, :delete]
 
   alias VendingMachine.Catalogue
   alias VendingMachine.Catalogue.Product
@@ -21,12 +22,21 @@ defmodule VendingMachineWeb.ProductController do
   end
 
   def show(conn, %{"id" => id}) do
-    product = Catalogue.get_product!(id)
-    render(conn, :show, product: product)
+    product = Catalogue.get_product(id)
+
+    case product do
+      %Product{} ->
+        render(conn, :show, product: product)
+
+      nil ->
+        conn
+        |> put_status(500)
+        |> json(%{error: %{status: 404, message: "Product not found"}})
+    end
   end
 
   def update(conn, %{"id" => id, "product" => product_params}) do
-    product = Catalogue.get_product!(id)
+    product = Catalogue.get_product(id)
 
     with {:ok, %Product{} = product} <- Catalogue.update_product(product, product_params) do
       render(conn, :show, product: product)
@@ -37,7 +47,7 @@ defmodule VendingMachineWeb.ProductController do
     product = Catalogue.get_product!(id)
 
     with {:ok, %Product{}} <- Catalogue.delete_product(product) do
-      send_resp(conn, :no_content, "")
+      send_resp(conn, 200, "Product deleted successful")
     end
   end
 end

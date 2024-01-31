@@ -270,29 +270,6 @@ defmodule VendingMachine.Accounts do
 
   ## Confirmation
 
-  @doc ~S"""
-  Delivers the confirmation email instructions to the given user.
-
-  ## Examples
-
-      iex> deliver_user_confirmation_instructions(user, &url(~p"/users/confirm/#{&1}"))
-      {:ok, %{to: ..., body: ...}}
-
-      iex> deliver_user_confirmation_instructions(confirmed_user, &url(~p"/users/confirm/#{&1}"))
-      {:error, :already_confirmed}
-
-  """
-  def deliver_user_confirmation_instructions(%User{} = user, confirmation_url_fun)
-      when is_function(confirmation_url_fun, 1) do
-    if user.confirmed_at do
-      {:error, :already_confirmed}
-    else
-      {encoded_token, user_token} = UserToken.build_email_token(user, "confirm")
-      Repo.insert!(user_token)
-      UserNotifier.deliver_confirmation_instructions(user, confirmation_url_fun.(encoded_token))
-    end
-  end
-
   @doc """
   Confirms a user by the given token.
 
@@ -377,17 +354,33 @@ defmodule VendingMachine.Accounts do
     end
   end
 
+  def create_admin(params) do
+    %User{}
+    |> User.changeset(params)
+    |> User.changeset_role(%{role: "admin"})
+    |> Repo.insert()
+  end
+
+  def set_admin_role(user) do
+    user
+    |> User.changeset_role(%{role: "admin"})
+    |> Repo.update()
+  end
+
   def update_user_balance(user, amount) do
     updated_amount = user.deposit_amount + amount
     amount_str = Integer.to_string(amount)
     updated_coins = Map.update(user.deposit_coins, amount_str, 1, &(&1 + 1))
 
-    user
-    |> VendingMachine.Accounts.User.deposit_changeset(%{
-      deposit_amount: updated_amount,
-      deposit_coins: updated_coins
-    })
-    |> Repo.update()
+    updated_user =
+      user
+      |> VendingMachine.Accounts.User.deposit_changeset(%{
+        deposit_amount: updated_amount,
+        deposit_coins: updated_coins
+      })
+      |> Repo.update()
+
+    updated_user
   end
 
   def update_user_balance(user, amount, change) do

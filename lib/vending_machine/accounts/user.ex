@@ -1,17 +1,15 @@
 defmodule VendingMachine.Accounts.User do
   use Ecto.Schema
+  use Pow.Ecto.Schema
   import Ecto.Changeset
 
   schema "users" do
-    field :email, :string
     field :username, :string
     field :deposit_amount, :float
     field :deposit_coins, :map
-    field :role, :string
-    field :password, :string, virtual: true, redact: true
-    field :hashed_password, :string, redact: true
-    field :confirmed_at, :naive_datetime
+    field :role, :string, default: "buyer"
 
+    pow_user_fields()
     timestamps(type: :utc_datetime)
   end
 
@@ -74,7 +72,6 @@ defmodule VendingMachine.Accounts.User do
       |> validate_length(:password, max: 72, count: :bytes)
       # Hashing could be done with `Ecto.Changeset.prepare_changes/2`, but that
       # would keep the database transaction open longer and hurt performance.
-      |> put_change(:hashed_password, Bcrypt.hash_pwd_salt(password))
       |> delete_change(:password)
     else
       changeset
@@ -139,10 +136,6 @@ defmodule VendingMachine.Accounts.User do
   If there is no user or the user doesn't have a password, we call
   `Bcrypt.no_user_verify/0` to avoid timing attacks.
   """
-  def valid_password?(%VendingMachine.Accounts.User{hashed_password: hashed_password}, password)
-      when is_binary(hashed_password) and byte_size(password) > 0 do
-    Bcrypt.verify_pass(password, hashed_password)
-  end
 
   def valid_password?(_, _) do
     Bcrypt.no_user_verify()
@@ -158,6 +151,15 @@ defmodule VendingMachine.Accounts.User do
     else
       add_error(changeset, :current_password, "is not valid")
     end
+  end
+
+  @doc """
+  Function ensure that  the role can only be buyer or seller.
+  """
+  def changeset_role(user_or_changeset, attrs) do
+    user_or_changeset
+    |> Ecto.Changeset.cast(attrs, [:role])
+    |> Ecto.Changeset.validate_inclusion(:role, ~w(buyer seller))
   end
 
   def deposit_changeset(user, attrs, _opts \\ []) do

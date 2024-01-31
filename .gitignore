@@ -35,3 +35,4 @@ vending_machine-*.tar
 npm-debug.log
 /assets/node_modules/
 
+/Mnesia.nonode@nohost/

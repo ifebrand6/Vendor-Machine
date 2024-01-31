@@ -14,10 +14,11 @@ defmodule VendingMachine.Application do
       {Phoenix.PubSub, name: VendingMachine.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: VendingMachine.Finch},
+      VendingMachineWeb.Endpoint,
+      Pow.Store.Backend.MnesiaCache
       # Start a worker by calling: VendingMachine.Worker.start_link(arg)
       # {VendingMachine.Worker, arg},
       # Start to serve requests, typically the last entry
-      VendingMachineWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

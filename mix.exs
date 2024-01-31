@@ -51,12 +51,14 @@ defmodule VendingMachine.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      # Authentication
+      {:pow, "~> 1.0.31"}
     ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
-  # For example, to install project dependencies and perform other setup tasks, run:
+  # For example, to install project deendencies and perform other setup tasks, run:
   #
   #     $ mix setup
   #

@@ -1,11 +1,15 @@
 defmodule VendingMachineWeb.TransactionController do
   use VendingMachineWeb, :controller
+  plug VendingMachineWeb.APIEnsureRolePlug, [:buyer]
+
   alias VendingMachine.Catalogue.Product
   alias VendingMachine.Accounts
   alias VendingMachine.Catalogue
 
+  action_fallback VendingMachineWeb.FallbackController
+
   def deposit(conn, %{"amount" => amount}) do
-    user = Accounts.get_temp_user()
+    user = VendingMachine.Accounts.get_user!(conn.assigns.current_user.id)
 
     case deposit_coin(user, amount) do
       {:ok, updated_user} ->
@@ -19,7 +23,7 @@ defmodule VendingMachineWeb.TransactionController do
   end
 
   def reset_balance(conn, _) do
-    user = Accounts.get_temp_user()
+    user = VendingMachine.Accounts.get_user!(conn.assigns.current_user.id)
 
     case VendingMachine.Accounts.reset_user_balance(user) do
       {:ok, updated_user} ->
@@ -33,7 +37,7 @@ defmodule VendingMachineWeb.TransactionController do
   end
 
   def buy(conn, %{"product_id" => product_id, "amount" => amount}) do
-    user = Accounts.get_temp_user()
+    user = VendingMachine.Accounts.get_user!(conn.assigns.current_user.id)
     amount = Util.convert_to_integer(amount)
     product = Catalogue.get_product(product_id)
 
@@ -59,23 +63,16 @@ defmodule VendingMachineWeb.TransactionController do
   end
 
   defp buy_products(user, product, amount) do
-    # require IEx;IEx.pry
     total_spent = Decimal.to_integer(product.cost) * amount
     purchased_products = %{product.id => amount, name: product.product_name}
 
-    # Assume the user has enough balance for the purchase
-    change = calculate_change(user, total_spent)
+    # Assumed the user has enough balance for the purchase
+    change = Util.calculate_change(total_spent, user.deposit_coins)
 
     # Update user's deposit and coin balance
     _ = Accounts.update_user_balance(user, total_spent, change)
 
     {:ok, total_spent, purchased_products, change}
-  end
-
-  defp calculate_change(_user, _total_spent) do
-    # Your logic to calculate change goes here
-    # For simplicity, let's assume the user has exact change
-    %{5 => 2, 10 => 1, 20 => 0, 50 => 3, 100 => 1}
   end
 
   defp deposit_coin(user, amount) do

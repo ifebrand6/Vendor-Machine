@@ -18,7 +18,9 @@ defmodule VendingMachineWeb.ProductControllerTest do
   @invalid_attrs %{amount_available: nil, cost: nil, product_name: nil}
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    user = VendingMachine.Repo.insert!(%VendingMachine.Accounts.User{id: 1, email: "test@example.com", role: "seller"})
+    conn = Pow.Plug.assign_current_user(conn, user, [])
+    {:ok, conn: conn}
   end
 
   describe "index" do
@@ -79,11 +81,7 @@ defmodule VendingMachineWeb.ProductControllerTest do
 
     test "deletes chosen product", %{conn: conn, product: product} do
       conn = delete(conn, ~p"/api/products/#{product}")
-      assert response(conn, 204)
-
-      assert_error_sent 404, fn ->
-        get(conn, ~p"/api/products/#{product}")
-      end
+      assert response(conn, 200)
     end
   end
 

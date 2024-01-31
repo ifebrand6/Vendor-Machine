@@ -1,27 +1,20 @@
 defmodule VendingMachineWeb.TransactionJSON do
   def deposit(%{user: user}) do
-    %{
-      user: user.id,
-      deposit_amount: user.deposit_amount,
-      deposit_coins: user.deposit_coins,
-      message: "Deposit successful"
-    }
+     data(user, "Deposit successful")
   end
 
   def reset(%{user: user}) do
-    %{
-      user: user.id,
-      deposit_amount: user.deposit_amount,
-      deposit_coins: user.deposit_coins,
-      message: "Reset successful"
-    }
+    data(user, "Reset successful")
   end
 
   def buy(%{total_spent: total_spent, purchased_products: purchased_products, change: change}) do
     %{
-      total_spent: total_spent,
-      purchased_products: purchased_products,
-      change: change
+      data: %{
+        total_spent: total_spent,
+        purchased_products: purchased_products,
+        change: change
+      },
+      message: "Transaction successfully"
     }
   end
 
@@ -35,5 +28,16 @@ defmodule VendingMachineWeb.TransactionJSON do
 
   def error(%{message: message}) do
     %{message: message}
+  end
+
+  defp data(data, message) do
+    %{
+      data: %{
+        user_id: data.id,
+        deposit_amount: data.deposit_amount,
+        deposit_coins: data.deposit_coins
+      },
+      message: message
+    }
   end
 end
