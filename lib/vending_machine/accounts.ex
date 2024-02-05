@@ -403,5 +403,11 @@ defmodule VendingMachine.Accounts do
     |> Repo.update()
   end
 
+  def update_user_unique_session_id(user, token) do
+    user
+    |> User.changeset_unique_session(%{unique_session_id: token})
+    |> Repo.update()
+  end
+
   def get_temp_user, do: Repo.one(from x in User, order_by: [desc: x.id], limit: 1)
 end

@@ -90,6 +90,24 @@ defmodule VendingMachineWeb.APIAuthPlug do
     end
   end
 
+  def append_to_session_metadata(conn) do
+    session_token =
+      Phoenix.Token.sign(VendingMachineWeb.Endpoint, "unique-token", conn.assigns.current_user.id)
+
+    _ =
+      VendingMachine.Accounts.update_user_unique_session_id(
+        conn.assigns.current_user,
+        session_token
+      )
+
+    metadata =
+      conn.private
+      |> Map.get(:pow_session_metadata, [])
+      |> Keyword.put(:unique_session_id, session_token)
+
+    Plug.Conn.put_private(conn, :pow_session_metadata, metadata)
+  end
+
   defp sign_token(conn, token, config) do
     Plug.sign_token(conn, signing_salt(), token, config)
   end

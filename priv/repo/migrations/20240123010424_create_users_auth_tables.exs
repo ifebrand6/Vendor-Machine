@@ -6,7 +6,6 @@ defmodule VendingMachine.Repo.Migrations.CreateUsers do
       add :username, :string, null: false
       add :password_hash, :string
       add :deposit_amount, :float, default: 0
-      # TODO optimized this
       add :deposit_coins, :map, default: %{5 => 0, 10 => 0, 20 => 0, 50 => 0, 100 => 0}
       add :role, :string
       timestamps()

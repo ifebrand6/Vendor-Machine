@@ -1,5 +1,6 @@
 defmodule VendingMachine.Accounts.User do
   use Ecto.Schema
+
   use Pow.Ecto.Schema,
     user_id_field: :username
 
@@ -12,6 +13,7 @@ defmodule VendingMachine.Accounts.User do
     field :deposit_amount, :float
     field :deposit_coins, :map
     field :role, :string
+    field :unique_session_id, :string
     timestamps(type: :utc_datetime)
   end
 
@@ -41,7 +43,7 @@ defmodule VendingMachine.Accounts.User do
   def changeset(user_or_changeset, attrs, opts \\ []) do
     user_or_changeset
     |> pow_changeset(attrs)
-    |> cast(attrs, [:role])
+    |> cast(attrs, [:role, :unique_session_id])
     |> validate_username()
     |> validate_password(opts)
     |> validate_inclusion(:role, @allowed_roles)
@@ -177,5 +179,10 @@ defmodule VendingMachine.Accounts.User do
   def deposit_changeset(user, attrs, _opts \\ []) do
     user
     |> cast(attrs, [:deposit_amount, :deposit_coins])
+  end
+
+  def changeset_unique_session(user_or_changeset, attrs) do
+    user_or_changeset
+    |> Ecto.Changeset.cast(attrs, [:unique_session_id])
   end
 end

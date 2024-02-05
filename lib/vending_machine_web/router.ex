@@ -25,7 +25,6 @@ defmodule VendingMachineWeb.Router do
 
   scope "/" do
     pipe_through :browser
-
     pow_routes()
   end
 
@@ -55,25 +54,9 @@ defmodule VendingMachineWeb.Router do
     resources "/registration", RegistrationController, singleton: true, only: [:create]
     resources "/session", SessionController, singleton: true, only: [:create, :delete]
     post "/session/renew", SessionController, :renew
+    delete "/session/delete_all", SessionController, :delete_all
 
     resources "/products", ProductController, only: [:index, :show]
-  end
-
-  # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:vending_machine, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router
-
-    scope "/dev" do
-      pipe_through :browser
-
-      live_dashboard "/dashboard", metrics: VendingMachineWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-    end
   end
 
   ## Authentication routes
