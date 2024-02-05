@@ -5,7 +5,7 @@ defmodule VendingMachineWeb.StoreLive.Index do
   alias VendingMachine.Catalogue.Product
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     {:ok, stream(socket, :products, Catalogue.list_products())}
   end
 

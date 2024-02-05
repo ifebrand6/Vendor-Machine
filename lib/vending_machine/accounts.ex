@@ -116,7 +116,7 @@ defmodule VendingMachine.Accounts do
 
   """
   def change_user_registration(%User{} = user, attrs \\ %{}) do
-    User.changeset(user, attrs, hash_password: false, validate_email: false)
+    User.changeset(user, attrs)
   end
 
   ## Settings

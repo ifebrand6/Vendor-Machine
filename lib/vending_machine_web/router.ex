@@ -2,8 +2,6 @@ defmodule VendingMachineWeb.Router do
   use VendingMachineWeb, :router
   use Pow.Phoenix.Router
 
-  import VendingMachineWeb.UserAuth
-
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -11,7 +9,7 @@ defmodule VendingMachineWeb.Router do
     plug :put_root_layout, html: {VendingMachineWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :fetch_current_user
+    plug Pow.Plug.Session, otp_app: :vending_machine
   end
 
   pipeline :api do
@@ -19,8 +17,12 @@ defmodule VendingMachineWeb.Router do
     plug VendingMachineWeb.APIAuthPlug, otp_app: :vending_machine
   end
 
-  pipeline :api_protected do
+  pipeline :protected do
     plug Pow.Plug.RequireAuthenticated, error_handler: VendingMachineWeb.APIAuthErrorHandler
+  end
+
+  pipeline :redirect_if_user_is_authenticated do
+    plug VendingMachineWeb.RedirectAuthenticatedUserPlug
   end
 
   scope "/" do
@@ -28,20 +30,9 @@ defmodule VendingMachineWeb.Router do
     pow_routes()
   end
 
-  scope "/", VendingMachineWeb do
-    pipe_through :browser
-
-    live "/products", ProductLive.Index, :index
-    live "/products/new", ProductLive.Index, :new
-    live "/products/:id/edit", ProductLive.Index, :edit
-
-    live "/products/:id", ProductLive.Show, :show
-    live "/products/:id/show/edit", ProductLive.Show, :edit
-  end
-
-  # Other scopes may use custom stacks.
+  # API
   scope "/api", VendingMachineWeb do
-    pipe_through [:api, :api_protected]
+    pipe_through [:api, :protected]
     resources "/products", ProductController, only: [:create, :update, :delete]
 
     post "/deposit", TransactionController, :deposit
@@ -59,41 +50,32 @@ defmodule VendingMachineWeb.Router do
     resources "/products", ProductController, only: [:index, :show]
   end
 
-  ## Authentication routes
-
+  # LiveView CLIENT
   scope "/", VendingMachineWeb do
-    pipe_through [:browser, :redirect_if_user_is_authenticated]
+    pipe_through [:browser, :protected]
 
-    live_session :redirect_if_user_is_authenticated,
-      on_mount: [{VendingMachineWeb.UserAuth, :redirect_if_user_is_authenticated}] do
-      live "/users/register", UserRegistrationLive, :new
-      live "/users/log_in", UserLoginLive, :new
-      live "/users/reset_password", UserForgotPasswordLive, :new
-      live "/users/reset_password/:token", UserResetPasswordLive, :edit
-    end
+    live_session :default, session: {__MODULE__, :with_session, []} do
+      live "/", StoreLive.Index, :index
 
-    post "/users/log_in", UserSessionController, :create
-  end
+      live "/products", ProductLive.Index, :index
+      live "/products/new", ProductLive.Index, :new
+      live "/products/:id/edit", ProductLive.Index, :edit
 
-  scope "/", VendingMachineWeb do
-    pipe_through [:browser, :require_authenticated_user]
-
-    live_session :require_authenticated_user,
-      on_mount: [{VendingMachineWeb.UserAuth, :ensure_authenticated}] do
-      live "/users/settings", UserSettingsLive, :edit
-      live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+      live "/products/:id", ProductLive.Show, :show
+      live "/products/:id/show/edit", ProductLive.Show, :edit
     end
   end
 
-  scope "/", VendingMachineWeb do
-    pipe_through [:browser]
-
-    delete "/users/log_out", UserSessionController, :delete
-
-    live_session :current_user,
-      on_mount: [{VendingMachineWeb.UserAuth, :mount_current_user}] do
-      live "/users/confirm/:token", UserConfirmationLive, :edit
-      live "/users/confirm", UserConfirmationInstructionsLive, :new
-    end
+  scope "/" do
+    pipe_through :browser
+       resources "/registration", RegistrationController, singleton: true, only: [:create]
   end
+
+  def with_session(conn) do
+      %{
+        "path" => "/" <> Enum.join(conn.path_info, "/"),
+        "current_user" => conn.assigns.current_user
+      }
+    end
+
 end

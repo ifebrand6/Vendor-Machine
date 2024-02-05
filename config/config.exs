@@ -62,6 +62,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 config :vending_machine, :pow,
+  web_module: VendingMachineWeb,
   user: VendingMachine.Accounts.User,
   repo: VendingMachine.Repo
 
