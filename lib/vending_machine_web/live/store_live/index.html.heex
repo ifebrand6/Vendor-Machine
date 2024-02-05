@@ -1,31 +1,43 @@
 <.header>
   Listing Products in Machine
   <:actions>
-    <.link patch={~p"/products/new"}>
+    <.link patch={~p"/store/new"}>
       <.button>Deposit Coins</.button>
     </.link>
   </:actions>
   <:actions>
-    <.link patch={~p"/products/new"}>
+    <.link patch={~p"/res/new"}>
       <.button>Reset</.button>
     </.link>
   </:actions>
 </.header>
-
-<.table
-  id="products"
-  rows={@streams.products}
-  row_click={fn {_id, product} -> JS.navigate(~p"/products/#{product}") end}
->
-  <:col :let={{_id, product}} label="Amount available"><%= product.amount_available %></:col>
-  <:col :let={{_id, product}} label="Cost"><%= product.cost %></:col>
-  <:col :let={{_id, product}} label="Product name"><%= product.product_name %></:col>
-  <:action :let={{_id, product}}>
-    <div class="sr-only">
-      <.link navigate={~p"/products/#{product}"}>Buy</.link>
+<div class="grid grid-rows-3">
+  <%= for {_id, product} <- @streams.products do %>
+  <div class="flex-1 max-w-[100%] mx-4 flex-col mt-6 text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-96">
+    <div class="relative h-56 mx-4 my-4 overflow-hidden text-white shadow-lg bg-clip-border rounded-xl bg-blue-gray-500 shadow-blue-gray-500/40">
+      <img
+        src="https://source.unsplash.com/random/300×300"
+        alt="card-image"
+      />
     </div>
-  </:action>
-</.table>
+    <div class="p-6">
+      <h5 class="block mb-2 font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue-gray-900">
+        <%= product.product_name %>
+      </h5>
+    </div>
+    <div class="p-6 pt-0">
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-gray-900 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
+        type="button"
+      >
+        Buy
+      </button>
+    </div>
+  </div>
+<% end %>
+</div>
+
+
 
 <.modal :if={@live_action in [:new, :edit]} id="product-modal" show on_cancel={JS.patch(~p"/")}>
   <.live_component

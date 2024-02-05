@@ -1,3 +1,4 @@
+
 defmodule VendingMachineWeb.StoreLive.Index do
   use VendingMachineWeb, :live_view
 
@@ -44,4 +45,5 @@ defmodule VendingMachineWeb.StoreLive.Index do
 
     {:noreply, stream_delete(socket, :products, product)}
   end
+
 end

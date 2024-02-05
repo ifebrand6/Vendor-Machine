@@ -25,10 +25,6 @@ defmodule VendingMachineWeb.TransactionController do
   def reset_balance(conn, _) do
     user = VendingMachine.Accounts.get_user!(conn.assigns.current_user.id)
 
-    config = Pow.Plug.fetch_config(conn)
-    require IEx
-    IEx.pry()
-
     case VendingMachine.Accounts.reset_user_balance(user) do
       {:ok, updated_user} ->
         render(conn, "reset.json", user: updated_user)

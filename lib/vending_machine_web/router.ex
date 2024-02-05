@@ -21,6 +21,10 @@ defmodule VendingMachineWeb.Router do
     plug Pow.Plug.RequireAuthenticated, error_handler: VendingMachineWeb.APIAuthErrorHandler
   end
 
+  pipeline :ensure_user_role do
+    plug VendingMachineWeb.APIEnsureRolePlug
+  end
+
   pipeline :redirect_if_user_is_authenticated do
     plug VendingMachineWeb.RedirectAuthenticatedUserPlug
   end
