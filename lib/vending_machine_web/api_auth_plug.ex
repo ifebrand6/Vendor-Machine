@@ -5,7 +5,6 @@ defmodule VendingMachineWeb.APIAuthPlug do
   alias Pow.{Config, Plug, Store.CredentialsCache}
   alias PowPersistentSession.Store.PersistentSessionCache
 
-
   def fetch(conn, config) do
     with {:ok, signed_token} <- fetch_access_token(conn),
          {:ok, token} <- verify_token(conn, signed_token, config),
@@ -22,6 +21,7 @@ defmodule VendingMachineWeb.APIAuthPlug do
     renewal_token = Pow.UUID.generate()
     expiration = :timer.minutes(30)
     expired_at = DateTime.utc_now() |> DateTime.add(expiration, :millisecond)
+    # Check if user with active session exist
 
     conn =
       conn

@@ -1,6 +1,6 @@
 defmodule VendingMachineWeb.TransactionJSON do
   def deposit(%{user: user}) do
-     data(user, "Deposit successful")
+    data(user, "Deposit successful")
   end
 
   def reset(%{user: user}) do

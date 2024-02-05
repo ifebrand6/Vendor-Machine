@@ -1,15 +1,17 @@
 defmodule VendingMachine.Accounts.User do
   use Ecto.Schema
-  use Pow.Ecto.Schema
+  use Pow.Ecto.Schema,
+    user_id_field: :username
+
   import Ecto.Changeset
 
+  @allowed_roles ~w(buyer seller)
+
   schema "users" do
-    field :username, :string
+    pow_user_fields()
     field :deposit_amount, :float
     field :deposit_coins, :map
-    field :role, :string, default: "buyer"
-
-    pow_user_fields()
+    field :role, :string
     timestamps(type: :utc_datetime)
   end
 
@@ -36,11 +38,13 @@ defmodule VendingMachine.Accounts.User do
       submitting the form), this option can be set to `false`.
       Defaults to `true`.
   """
-  def registration_changeset(user, attrs, opts \\ []) do
-    user
-    |> cast(attrs, [:email, :username, :password, :deposit_amount, :deposit_coins, :role])
-    |> validate_email(opts)
+  def changeset(user_or_changeset, attrs, opts \\ []) do
+    user_or_changeset
+    |> pow_changeset(attrs)
+    |> cast(attrs, [:role])
+    |> validate_username()
     |> validate_password(opts)
+    |> validate_inclusion(:role, @allowed_roles)
   end
 
   defp validate_email(changeset, opts) do
@@ -51,14 +55,22 @@ defmodule VendingMachine.Accounts.User do
     |> maybe_validate_unique_email(opts)
   end
 
+  defp validate_username(changeset) do
+    changeset
+    |> validate_required([:username])
+    |> validate_length(:username, min: 3, max: 30)
+    |> validate_format(:username, ~r/^[a-zA-Z0-9_]+$/,
+      message: "can only contain letters, numbers, and underscores"
+    )
+    |> unique_constraint(:username)
+  end
+
   defp validate_password(changeset, opts) do
     changeset
     |> validate_required([:password])
-    |> validate_length(:password, min: 12, max: 72)
-    # Examples of additional password validation:
-    # |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
-    # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
-    # |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
+    |> validate_length(:password, min: 7, max: 72)
+    |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
+    |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
     |> maybe_hash_password(opts)
   end
 
@@ -159,7 +171,7 @@ defmodule VendingMachine.Accounts.User do
   def changeset_role(user_or_changeset, attrs) do
     user_or_changeset
     |> Ecto.Changeset.cast(attrs, [:role])
-    |> Ecto.Changeset.validate_inclusion(:role, ~w(buyer seller))
+    |> Ecto.Changeset.validate_inclusion(:role, @allowed_roles)
   end
 
   def deposit_changeset(user, attrs, _opts \\ []) do

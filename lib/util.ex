@@ -33,7 +33,6 @@ defmodule Util do
   end
 
   def display_changeset_error(%Ecto.Changeset{} = changeset) do
-
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->
         String.replace(acc, "%{#{key}}", _to_string(value))

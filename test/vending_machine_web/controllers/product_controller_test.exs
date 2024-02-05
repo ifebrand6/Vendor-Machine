@@ -18,7 +18,13 @@ defmodule VendingMachineWeb.ProductControllerTest do
   @invalid_attrs %{amount_available: nil, cost: nil, product_name: nil}
 
   setup %{conn: conn} do
-    user = VendingMachine.Repo.insert!(%VendingMachine.Accounts.User{id: 1, email: "test@example.com", role: "seller"})
+    user =
+      VendingMachine.Repo.insert!(%VendingMachine.Accounts.User{
+        id: 1,
+        email: "test@example.com",
+        role: "seller"
+      })
+
     conn = Pow.Plug.assign_current_user(conn, user, [])
     {:ok, conn: conn}
   end

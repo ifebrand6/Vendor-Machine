@@ -14,7 +14,7 @@ defmodule VendingMachineWeb.SessionController do
             renewal_token: conn.private.api_renewal_token,
             expired_at: conn.private.api_access_token_expired_at,
             user: %{
-              email: conn.private.current_user.email
+              username: conn.private.current_user.username
             }
           }
         })

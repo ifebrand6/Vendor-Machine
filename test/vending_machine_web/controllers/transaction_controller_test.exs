@@ -5,7 +5,9 @@ defmodule VendingMachineWeb.TransactionControllerTest do
   import VendingMachine.AccountsFixtures
 
   setup %{conn: conn} do
-    user = VendingMachine.Repo.insert!(%VendingMachine.Accounts.User{id: 1, email: "test@example.com"})
+    user =
+      VendingMachine.Repo.insert!(%VendingMachine.Accounts.User{id: 1, email: "test@example.com"})
+
     conn = Pow.Plug.assign_current_user(conn, user, [])
     {:ok, conn: conn}
   end

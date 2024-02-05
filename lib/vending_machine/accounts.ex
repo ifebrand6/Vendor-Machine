@@ -102,7 +102,7 @@ defmodule VendingMachine.Accounts do
   """
   def register_user(attrs) do
     %User{}
-    |> User.registration_changeset(attrs)
+    |> User.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -116,7 +116,7 @@ defmodule VendingMachine.Accounts do
 
   """
   def change_user_registration(%User{} = user, attrs \\ %{}) do
-    User.registration_changeset(user, attrs, hash_password: false, validate_email: false)
+    User.changeset(user, attrs, hash_password: false, validate_email: false)
   end
 
   ## Settings
@@ -361,9 +361,9 @@ defmodule VendingMachine.Accounts do
     |> Repo.insert()
   end
 
-  def set_admin_role(user) do
+  def set_role(user, role) do
     user
-    |> User.changeset_role(%{role: "admin"})
+    |> User.changeset_role(%{role: role})
     |> Repo.update()
   end
 
